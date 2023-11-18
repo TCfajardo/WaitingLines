@@ -36,6 +36,14 @@ class VehicleCatalog:
             return self.vehicles[category]
         else:
             return None
+    
+    def print_catalog(self):
+        for category, vehicle in self.vehicles.items():
+            print(f"Categoria: {vehicle.category}")
+            print(f"Tipo de Vehiculo: {vehicle.vehicle_type}")
+            print(f"Tarifa: ${vehicle.tariff}")
+            print("------------------------")
+
 
 # Ejemplo de uso:
 if __name__ == "__main__":
@@ -47,8 +55,12 @@ if __name__ == "__main__":
     vehicle = vehicle_catalog.get_vehicle(category)
 
     if vehicle:
-        print(f"Categoría: {vehicle.category}")
-        print(f"Tipo de Vehículo: {vehicle.vehicle_type}")
+        print(f"Categoria: {vehicle.category}")
+        print(f"Tipo de Vehiculo: {vehicle.vehicle_type}")
         print(f"Tarifa: ${vehicle.tariff}")
     else:
-        print("Vehículo no encontrado.")
+        print("Vehiculo no encontrado.")
+
+    # Imprimir todo el catálogo
+    print("\nCatalogo Completo:")
+    vehicle_catalog.print_catalog()
