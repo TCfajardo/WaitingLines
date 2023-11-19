@@ -1,12 +1,12 @@
 import scipy.stats
 from LCG import LCG
 # Parámetros del generador según tus entradas
-seed = 1  # Xo
+seed = 12345  # Xo
 k = 4
 c = 3
 g = 7
 m = 2 ** g
-a = 1 + 2 * k
+a = 1 + 5 * k
 
 # Cantidad de números pseudoaleatorios a generar
 num_to_generate = 100
