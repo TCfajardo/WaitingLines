@@ -1,0 +1,8 @@
+CATEGORÍA,TIPO DE VEHÍCULO,TARIFA
+I,Automoviles,9600
+II,Camperos,9600
+III,Camionetas,9600
+IV,Buses,16700
+V,Busetas,16700
+VI,Camiones Pequenios de 2 Ejes,10800
+VII,Camiones Grandes de 2 Ejes,24300
