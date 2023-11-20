@@ -25,6 +25,12 @@ class Clients:
         index = int(random_number * len(categories))
         return categories[index]
 
+    def get_index_by_vehicle_type(self, vehicle_type):
+        for index, vehicle in enumerate(self.vehicles):
+            if vehicle.vehicle_type == vehicle_type:
+                return index
+        return -1  # Retorna -1 si el tipo de vehículo no se encuentra
+        
 # Ejemplo de uso:
 if __name__ == "__main__":
     # Parámetros del generador según tus entradas
