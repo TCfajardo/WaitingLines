@@ -1,6 +1,7 @@
 from Vehicle import VehicleCatalog
 from LCG import LCG
 from Clients import Clients
+from collections import deque
 import math
 
 class SimuladorLineaEspera:
@@ -12,6 +13,7 @@ class SimuladorLineaEspera:
 
     Atributos:
     - tasa_llegada (float): La tasa de llegada de clientes.
+    - tasa_servicio (float): La tasa de servicio.
     - lcg (LCG): Instancia de la clase LCG para generar números pseudoaleatorios.
     - vehicle_catalog (VehicleCatalog): Catálogo de vehículos.
     - clients (Clients): Instancia de la clase Clients para la generación de vehículos.
@@ -20,12 +22,14 @@ class SimuladorLineaEspera:
     - iat_anterior (float): Valor del IAT del cliente anterior.
     """
 
-    def __init__(self, tasa_llegada, tasa_servicio):
+    def __init__(self, tasa_llegada, tasa_servicio, num_servidores):
         """
         Inicializa un objeto SimuladorLineaEspera.
 
         Parámetros:
-        - tasa_llegada: La tasa de llegada de clientes a la línea de espera.
+        - tasa_llegada (float): La tasa de llegada de clientes a la línea de espera.
+        - tasa_servicio (float): La tasa de servicio.
+        - num_servidores (int): Número de servidores (colas).
         """
         # Parámetros del generador 
         seed_arrival = 123  # Xo
@@ -55,6 +59,36 @@ class SimuladorLineaEspera:
         self.tiempo_acumulado_llegada = 0
         self.iat_anterior = 0
 
+        # Agregamos una lista de colas para manejar múltiples servidores
+        self.colas = [deque() for _ in range(num_servidores)]
+
+    def asignar_a_cola(self):
+        """
+        Asigna al cliente a la cola más corta (servidor).
+        """
+        # Calcula las longitudes de todas las colas
+        longitudes_colas = [len(cola) for cola in self.colas]
+
+        # Encuentra el índice de la cola más corta
+        indice_cola_mas_corta = longitudes_colas.index(min(longitudes_colas))
+
+        # Asigna el cliente a la cola más corta
+        self.colas[indice_cola_mas_corta].append(self.client_counter)
+        print(f"Cliente #{self.client_counter} asignado a la cola #{indice_cola_mas_corta + 1}")
+
+
+    def procesar_servidores(self):
+        """
+        Procesa los servidores, tomando clientes de las colas si están disponibles.
+        Al final, muestra el tamaño de cada cola.
+        """
+        for i, cola in enumerate(self.colas):
+            if cola:
+                cliente = cola.popleft()
+                print(f"Servidor #{i + 1} atiende al Cliente #{cliente}")
+
+        
+
     def generateArrival(self, num_vehiculos):
         """
         Genera vehículos aleatorios e imprime información incremental sobre cada vehículo en la llegada.
@@ -70,18 +104,19 @@ class SimuladorLineaEspera:
             self.client_counter += 1
             iat = -math.log(1 - random_number) / self.tasa_llegada
             st = -math.log(1 - random_numbers_service[self.client_counter - 1]) / self.tasa_servicio
-
+        
             if self.client_counter == 1:
                 self.tiempo_acumulado_llegada = 0  # Para el primer cliente, el AT es 0
             else:
                 self.tiempo_acumulado_llegada += self.iat_anterior  # Actualiza el tiempo acumulado de llegada
 
             print(f"Cliente #{self.client_counter}, {vehicle.vehicle_type}, R(i) Llegada: {random_number:.4f}, IAT: {iat:.4f}, AT: {self.tiempo_acumulado_llegada:.4f}, R(i) Servicio: {random_numbers_service[self.client_counter - 1]:.4f}, ST: {st:.4f}")
+            self.asignar_a_cola()  # Asigna al cliente a la cola correspondiente
+            self.procesar_servidores()  # Procesa los servidores después de cada llegada
             self.iat_anterior = iat  # Actualiza el IAT anterior para el próximo cálculo
 
-
 if __name__ == "__main__":
-    tasa_llegada = 3  # Tasa de llegada 
+    tasa_llegada = 711.44  # Tasa de llegada 
     tasa_servicio = 2
-    simulador = SimuladorLineaEspera(tasa_llegada, tasa_servicio)
-    simulador.generateArrival(50)
+    simulador = SimuladorLineaEspera(tasa_llegada, tasa_servicio, 5)
+    simulador.generateArrival(10)
